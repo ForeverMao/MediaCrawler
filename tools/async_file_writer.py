@@ -50,29 +50,24 @@ class AsyncFileWriter:
                     await writer.writeheader()
                 await writer.writerow(item)
 
-    async def write_single_item_to_json(self, item: Dict, item_type: str):
-        file_path = self._get_file_path('json', item_type)
+    async def write_single_item_to_jsonl(self, item: Dict, item_type: str):
+        """
+        以 JSONL 格式 (每行一个 JSON 对象) 追加写入数据。
+        性能优于全量重写 standard JSON。
+        """
+        # 修改文件类型为 jsonl
+        file_path = self._get_file_path('jsonl', item_type)
+        
         async with self.lock:
-            existing_data = []
-            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                async with aiofiles.open(file_path, 'r', encoding='utf-8') as f:
-                    try:
-                        content = await f.read()
-                        if content:
-                            existing_data = json.loads(content)
-                        if not isinstance(existing_data, list):
-                            existing_data = [existing_data]
-                    except json.JSONDecodeError:
-                        existing_data = []
-
-            existing_data.append(item)
-
-            async with aiofiles.open(file_path, 'w', encoding='utf-8') as f:
-                await f.write(json.dumps(existing_data, ensure_ascii=False, indent=4))
+            # 使用 'a' 模式直接追加
+            async with aiofiles.open(file_path, 'a', encoding='utf-8') as f:
+                # 序列化为单行 JSON，并在末尾添加换行符
+                line = json.dumps(item, ensure_ascii=False) + "\n"
+                await f.write(line)
 
     async def generate_wordcloud_from_comments(self):
         """
-        Generate wordcloud from comments data
+        Generate wordcloud from comments data (Support JSONL format)
         Only works when ENABLE_GET_WORDCLOUD and ENABLE_GET_COMMENTS are True
         """
         if not config.ENABLE_GET_WORDCLOUD or not config.ENABLE_GET_COMMENTS:
@@ -82,31 +77,30 @@ class AsyncFileWriter:
             return
 
         try:
-            # Read comments from JSON file
-            comments_file_path = self._get_file_path('json', 'comments')
+            # 1. 修改：读取路径改为 .jsonl
+            comments_file_path = self._get_file_path('jsonl', 'comments')
+            
             if not os.path.exists(comments_file_path) or os.path.getsize(comments_file_path) == 0:
                 utils.logger.info(f"[AsyncFileWriter.generate_wordcloud_from_comments] No comments file found at {comments_file_path}")
                 return
 
-            async with aiofiles.open(comments_file_path, 'r', encoding='utf-8') as f:
-                content = await f.read()
-                if not content:
-                    utils.logger.info(f"[AsyncFileWriter.generate_wordcloud_from_comments] Comments file is empty")
-                    return
-
-                comments_data = json.loads(content)
-                if not isinstance(comments_data, list):
-                    comments_data = [comments_data]
-
-            # Filter comments data to only include 'content' field
-            # Handle different comment data structures across platforms
             filtered_data = []
-            for comment in comments_data:
-                if isinstance(comment, dict):
-                    # Try different possible content field names
-                    content_text = comment.get('content') or comment.get('comment_text') or comment.get('text') or ''
-                    if content_text:
-                        filtered_data.append({'content': content_text})
+            
+            # 2. 修改：逐行读取 JSONL 文件
+            async with aiofiles.open(comments_file_path, 'r', encoding='utf-8') as f:
+                async for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        comment = json.loads(line)
+                        # 提取内容逻辑保持不变
+                        if isinstance(comment, dict):
+                            content_text = comment.get('content') or comment.get('comment_text') or comment.get('text') or ''
+                            if content_text:
+                                filtered_data.append({'content': content_text})
+                    except json.JSONDecodeError:
+                        continue # 跳过损坏的行
 
             if not filtered_data:
                 utils.logger.info(f"[AsyncFileWriter.generate_wordcloud_from_comments] No valid comment content found")

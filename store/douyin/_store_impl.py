@@ -169,7 +169,7 @@ class DouyinJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=content_item,
             item_type="contents"
         )
@@ -183,7 +183,7 @@ class DouyinJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=comment_item,
             item_type="comments"
         )
