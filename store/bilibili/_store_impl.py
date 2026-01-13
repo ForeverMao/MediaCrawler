@@ -242,7 +242,7 @@ class BiliJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=content_item,
             item_type="contents"
         )
@@ -256,7 +256,7 @@ class BiliJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=comment_item,
             item_type="comments"
         )
@@ -270,7 +270,7 @@ class BiliJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=creator,
             item_type="creators"
         )
@@ -284,7 +284,7 @@ class BiliJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=contact_item,
             item_type="contacts"
         )
@@ -298,7 +298,7 @@ class BiliJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=dynamic_item,
             item_type="dynamics"
         )

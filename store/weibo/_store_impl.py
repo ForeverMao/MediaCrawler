@@ -192,7 +192,7 @@ class WeiboJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.writer.write_single_item_to_json(item_type="contents", item=content_item)
+        await self.writer.write_single_item_to_jsonl(item_type="contents", item=content_item)
 
     async def store_comment(self, comment_item: Dict):
         """
@@ -203,7 +203,7 @@ class WeiboJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.writer.write_single_item_to_json(item_type="comments", item=comment_item)
+        await self.writer.write_single_item_to_jsonl(item_type="comments", item=comment_item)
 
     async def store_creator(self, creator: Dict):
         """
@@ -214,7 +214,7 @@ class WeiboJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.writer.write_single_item_to_json(item_type="creators", item=creator)
+        await self.writer.write_single_item_to_jsonl(item_type="creators", item=creator)
 
 
 class WeiboSqliteStoreImplement(WeiboDbStoreImplement):

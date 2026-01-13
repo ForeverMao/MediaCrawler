@@ -197,7 +197,7 @@ class DouyinJsonStoreImplement(AbstractStore):
         Returns:
 
         """
-        await self.file_writer.write_single_item_to_json(
+        await self.file_writer.write_single_item_to_jsonl(
             item=creator,
             item_type="creators"
         )
