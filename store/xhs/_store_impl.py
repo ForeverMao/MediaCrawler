@@ -79,7 +79,7 @@ class XhsJsonStoreImplement(AbstractStore):
         :param content_item:
         :return:
         """
-        await self.writer.write_single_item_to_json(item_type="contents", item=content_item)
+        await self.writer.write_single_item_to_jsonl(item_type="contents", item=content_item)
 
     async def store_comment(self, comment_item: Dict):
         """
@@ -87,7 +87,7 @@ class XhsJsonStoreImplement(AbstractStore):
         :param comment_item:
         :return:
         """
-        await self.writer.write_single_item_to_json(item_type="comments", item=comment_item)
+        await self.writer.write_single_item_to_jsonl(item_type="comments", item=comment_item)
 
     async def store_creator(self, creator_item: Dict):
         pass

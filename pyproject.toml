@@ -37,8 +37,10 @@ dependencies = [
     "openpyxl>=3.1.2",
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
+    "pytz",
+    "pymongo",
 ]
 
 [[tool.uv.index]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+url = "https://pypi.org/simple"
 default = true
